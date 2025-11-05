@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simulaciones GPS y Relatividad</title>
+  <!-- Suprimir sensores obsoletos antes de cargar p5 -->
+  <script>try{window.DeviceMotionEvent=undefined;window.DeviceOrientationEvent=undefined;}catch(e){};</script>
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Libs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script>
+</head>
+<body>
+
+
+<div class="container">
+    <h1>🛰️ GPS y Relatividad: Simulaciones Interactivas</h1>
+    
+    <!-- SIMULACIÓN 1: SISTEMA GPS ORBITAL -->
+    <div class="simulation-container">
+        <h2>1. Sistema GPS - Vista Orbital</h2>
+        <div class="controls"><label><input type="checkbox" id="toggle-rotation-correction"> Incluir rotación terrestre (+~0.1 μs/día)</label></div>
+        <div class="info-panel">
+            <strong>31 satélites</strong> a <strong>20,200 km</strong> de altura | 
+            Velocidad: <strong>14,000 km/h</strong> | 
+            Período: <strong>12 horas</strong>
+        </div>
+        <div id="gps-orbital" class="canvas-container"></div>
+        <div class="controls">
+            <button onclick="toggleOrbitalAnimation()">⏯️ Play/Pausa</button>
+            <button onclick="changeOrbitalView()">🔄 Cambiar Vista</button>
+            <button onclick="toggleSatelliteTrails()">〰️ Mostrar Órbitas</button>
+            <label style="display: flex; align-items: center; gap: 10px;">
+                Velocidad: <input type="range" id="speed-slider" min="0.1" max="5" value="1" step="0.1" onchange="updateOrbitalSpeed(this.value)">
+            </label>
+        </div>
+    </div>
+
+    <!-- SIMULACIÓN 2: TRIANGULACIÓN GPS -->
+    <div class="simulation-container">
+        <h2>2. Triangulación GPS - Cómo Encuentra tu Posición</h2>
+        <div class="controls"><label><input type="checkbox" id="toggle-rotation-correction"> Incluir rotación terrestre (+~0.1 μs/día)</label></div>
+        <div class="info-panel">
+            Click para mover tu posición | Las esferas muestran la distancia a cada satélite
+        </div>
+        <div id="triangulation" class="canvas-container"></div>
+        <div id="triangulation-3d" class="canvas-container" style="display:none; height:300px;"></div>
+        <div class="controls">
+            <button onclick="addSatellite()">➕ Añadir Satélite</button>
+            <button onclick="removeSatellite()">➖ Quitar Satélite</button>
+            <button onclick="animateTriangulation()">🎯 Animar Búsqueda</button>
+            <button onclick="toggleTriangulation3D()">🧭 Vista 3D</button>
+            <select id="sat-count" onchange="updateSatelliteCount(this.value)">
+                <option value="1">1 Satélite (Esfera)</option>
+                <option value="2">2 Satélites (Círculo)</option>
+                <option value="3">3 Satélites (2 Puntos)</option>
+                <option value="4" selected>4 Satélites (Punto Único)</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- SIMULACIÓN 3: DILATACIÓN TEMPORAL -->
+    <div class="simulation-container">
+        <h2>3. Relojes Relativistas - Comparación en Tiempo Real</h2>
+        <div class="equation">
+            Δt' = Δt × √(1 - v²/c²) × √(1 - 2GM/rc²) <br><small>aprox. campo débil (SR + GR); opcional: rotación terrestre/Sagnac</small>
+        </div>
+        <div class="controls"><label><input type="checkbox" id="toggle-rotation-correction"> Incluir rotación terrestre (+~0.1 μs/día)</label></div>
+        <div class="info-panel">
+            <span class="stat">🌍 Reloj Tierra: <span id="earth-time">00:00:00.000</span></span>
+            <span class="stat">🛰️ Reloj GPS: <span id="gps-time">00:00:00.000</span></span>
+            <span class="stat">⚡ Diferencia: <span id="time-diff">0 μs</span></span>
+        </div>
+        <div id="time-dilation" class="canvas-container"></div>
+        <div class="controls">
+            <button onclick="resetClocks()">🔄 Reiniciar</button>
+            <button onclick="toggleTimeDilation()">⏯️ Play/Pausa</button>
+            <button onclick="changeTimeScale()">⏩ Cambiar Escala Temporal</button>
+            <label>
+                Días simulados/segundo: 
+                <input type="number" id="days-per-sec" value="1" min="0.1" max="365" step="0.1" onchange="updateTimeScale(this.value)">
+            </label>
+        </div>
+    </div>
+
+    <!-- SIMULACIÓN 4: DERIVA SIN RELATIVIDAD -->
+    <div class="simulation-container">
+        <h2>4. Deriva GPS Sin Corrección Relativista</h2>
+        <div class="controls"><label><input type="checkbox" id="toggle-rotation-correction"> Incluir rotación terrestre (+~0.1 μs/día)</label></div>
+        <div class="info-panel">
+            Error acumulado: <span id="accumulated-error" style="font-size: 24px; color: #ff6b6b;">0 metros</span> | 
+            Tiempo transcurrido: <span id="elapsed-time">0 horas</span>
+        </div>
+        <div id="drift-simulation" class="canvas-container"></div>
+        <div class="controls">
+            <button onclick="resetDrift()">🔄 Reiniciar</button>
+            <button onclick="toggleDrift()">⏯️ Play/Pausa</button>
+            <button onclick="showWithCorrection()">✅ Mostrar Con Corrección</button>
+            <button onclick="showWithoutCorrection()">❌ Mostrar Sin Corrección</button>
+            <select id="location-select" onchange="changeLocation(this.value)">
+                <option value="nyc">Nueva York</option>
+                <option value="london">Londres</option>
+                <option value="tokyo">Tokyo</option>
+                <option value="sydney">Sydney</option>
+                <option value="mexico">Ciudad de México</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- SIMULACIÓN 5: CAMPO GRAVITACIONAL -->
+    <div class="simulation-container">
+        <h2>5. Campo Gravitacional y Dilatación Temporal</h2>
+        <div class="controls"><label><input type="checkbox" id="toggle-rotation-correction"> Incluir rotación terrestre (+~0.1 μs/día)</label></div>
+        <div class="info-panel">
+            Más rojo = gravedad más fuerte = tiempo más lento | Satélites GPS en zona azul
+        </div>
+        <div id="gravity-field" class="canvas-container"></div>
+        <div class="controls">
+            <button onclick="toggleGravityAnimation()">🌊 Animar Campo</button>
+            <button onclick="showTimeContours()">⏰ Mostrar Contornos Temporales</button>
+            <button onclick="addTestParticle()">🔵 Añadir Partícula de Prueba</button>
+        </div>
+    </div>
+
+    <!-- SIMULACIÓN 6: EFECTOS COMBINADOS -->
+    <div class="simulation-container">
+        <h2>6. Dashboard de Efectos Relativistas</h2>
+        <div id="combined-effects"></div>
+        <div class="controls">
+            <button onclick="updateCombinedChart()">📊 Actualizar Gráficos</button>
+            <button onclick="exportData()">💾 Exportar Datos</button>
+        </div>
+    </div>
+
+    <!-- SIMULACIÓN 3D CON THREE.JS -->
+    <div class="simulation-container">
+        <h2>7. Visualización 3D del Sistema GPS</h2>
+        <div id="three-container"></div>
+        <div class="controls">
+            <button onclick="toggle3DAnimation()">⏯️ Play/Pausa</button>
+            <button onclick="toggleEarthRotation()">🌍 Rotar Tierra</button>
+            <button onclick="showSignalPropagation()">📡 Mostrar Señales</button>
+            <button onclick="highlightVisibleSatellites()">👁️ Satélites Visibles</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<!-- App JS -->
+<script src="js/globals.js"></script>
+<script src="js/sim1_orbital.js"></script>
+<script src="js/sim2_triangulation.js"></script>
+<script src="js/sim3_timedilation.js"></script>
+<script src="js/sim4_drift.js"></script>
+<script src="js/sim5_gravity.js"></script>
+<script src="js/plot_combined.js"></script>
+<script src="js/three_visualization.js"></script>
+<script src="js/triangulation3d.js"></script>
+<script src="js/bootstrap.js"></script>
+</body>
+</html>

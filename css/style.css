@@ -1,0 +1,101 @@
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2 { 
+            text-align: center; 
+            margin: 30px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .simulation-container {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px 0 rgba(245, 87, 108, 0.4);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px 0 rgba(245, 87, 108, 0.6);
+        }
+        .info-panel {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        canvas {
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        select, input {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 14px;
+        }
+        select option {
+            background: #764ba2;
+        }
+        #three-container {
+            width: 100%;
+            height: 600px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        .stat {
+            display: inline-block;
+            margin: 0 15px;
+            padding: 5px 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+        }
+        .equation {
+            font-size: 18px;
+            text-align: center;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Times New Roman', serif;
+            letter-spacing: 1px;
+        }
+    
