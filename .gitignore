@@ -1,0 +1,3 @@
+# Generado por Posta (posta init): los secretos declarados en .posta/config.json no entran a git.
+/.env
+/.env.local
